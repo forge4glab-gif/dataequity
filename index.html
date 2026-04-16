@@ -1,60 +1,63 @@
 <!DOCTYPE html>
-<html>
+<html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DATAEQUITY MONITOR LIVE</title>
 </head>
 <body style="background:#000;color:#2ecc71;font-family:monospace;padding:20px;text-align:center;">
-    <h3 style="border-bottom:2px solid #2ecc71;padding-bottom:10px;">FORGE.4G.LAB // AUDITORIA</h3>
     
-    <div style="background:#111;padding:25px;border-radius:15px;border:1px solid #333;margin:20px 0;">
-        <small style="color:#888;">POTENCIAL ACUMULADO (AWS LIVE)</small>
-        <div id="saldo" style="font-size:38px;font-weight:bold;color:#fff;">R$ 1.658,57</div>
+    <h3 style="border-bottom:2px solid #2ecc71;padding-bottom:10px;letter-spacing:2px;">FORGE.4G.LAB // AUDITORIA</h3>
+    
+    <div style="background:#111;padding:25px;border-radius:15px;border:1px solid #333;margin:20px 0;box-shadow: 0 0 15px rgba(46, 204, 113, 0.1);">
+        <small style="color:#888;text-transform:uppercase;font-size:10px;">Potencial Total de Monetização</small>
+        <div id="saldo" style="font-size:42px;font-weight:bold;color:#fff;margin:10px 0;">R$ 1.658,57</div>
     </div>
 
     <div id="painel-invasor" style="background:#050505;border:1px dashed #2ecc71;padding:15px;border-radius:10px;margin-bottom:20px;">
         <div style="font-size:10px;color:#888;">ÚLTIMA CAPTURA IDENTIFICADA:</div>
-        <div id="nome-invasor" style="font-size:18px;color:#e74c3c;font-weight:bold;margin:5px 0;">SINCRONIZANDO...</div>
+        <div id="nome-invasor" style="font-size:18px;color:#e74c3c;font-weight:bold;margin:5px 0;">MONITORANDO...</div>
         <div id="ip-invasor" style="font-size:12px;color:#3498db;">STATUS: AGUARDANDO NUVEM</div>
     </div>
 
-    <div id="status" style="font-size:11px;color:#f1c40f;">CONECTANDO À AWS...</div>
+    <div id="status" style="font-size:11px;color:#f1c40f;font-weight:bold;">SINCRONIZANDO...</div>
 
     <script>
-        // Usamos APENAS o link que você confirmou que está ONLINE
         const API = "https://hrp3fqujbvst7sx5757gs3ltqq0xeptm.lambda-url.us-east-1.on.aws/";
 
         async function update() {
             try {
-                // Buscamos direto da Lambda
-                const response = await fetch(API);
-                const data = await response.json();
+                // Chamada direta para evitar cache e bloqueios usando o carimbo de tempo
+                const res = await fetch(API + "?v=" + Date.now());
+                const data = await res.json();
                 const item = Array.isArray(data) ? data[0] : data;
 
                 if (item) {
-                    // Atualiza Saldo
-                    const valor = item.potencial || 1658.57;
-                    document.getElementById('saldo').innerText = "R$ " + Number(valor).toLocaleString('pt-BR',{minimumFractionDigits:2});
+                    // 1. Atualiza o Saldo com o valor vindo da AWS ou o base
+                    const valorFinal = item.potencial || 1658.57;
+                    document.getElementById('saldo').innerText = "R$ " + Number(valorFinal).toLocaleString('pt-BR', {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2
+                    });
                     
-                    // Atualiza Invasor
-                    if (item.nome_invasor && item.nome_invasor !== "Aguardando Captura...") {
+                    // 2. Atualiza os dados do invasor (Alphabet, TikTok, etc)
+                    if (item.nome_invasor) {
                         document.getElementById('nome-invasor').innerText = item.nome_invasor.toUpperCase();
-                        document.getElementById('ip-invasor').innerText = "IP ORIGEM: " + (item.ip_invasor || "DETECTADO");
-                    } else {
-                        document.getElementById('nome-invasor').innerText = "CAPTURA ATIVA";
-                        document.getElementById('ip-invasor').innerText = "MONITORANDO TRÁFEGO...";
+                        document.getElementById('ip-invasor').innerText = "ORIGEM: " + (item.ip_invasor || "DETECTADO");
                     }
 
-                    // Status Verde
-                    document.getElementById('status').innerText = "SINC: " + new Date().toLocaleTimeString() + " [AWS LIVE]";
+                    // 3. Muda status para verde e mostra hora da última sincronia
+                    document.getElementById('status').innerText = "SINC: " + new Date().toLocaleTimeString() + " [LIVE]";
                     document.getElementById('status').style.color = "#2ecc71";
                 }
             } catch(e) {
-                document.getElementById('status').innerText = "RECONECTANDO À NUVEM...";
+                // Em caso de erro, mantém o alerta amarelo
+                document.getElementById('status').innerText = "SINCRONIZANDO...";
                 document.getElementById('status').style.color = "#f1c40f";
             }
         }
 
+        // Atualização a cada 5 segundos
         setInterval(update, 5000);
         update();
     </script>
