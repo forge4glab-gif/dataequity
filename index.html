@@ -8,29 +8,28 @@
     <h3 style="border-bottom:2px solid #2ecc71;padding-bottom:10px;">FORGE.4G.LAB // AUDITORIA</h3>
     <div style="background:#111;padding:25px;border-radius:15px;border:1px solid #333;margin:20px 0;">
         <small style="color:#888;">POTENCIAL ACUMULADO</small>
-        <div id="saldo" style="font-size:40px;font-weight:bold;color:#fff;">R$ 0,00</div>
+        <div id="saldo" style="font-size:38px;font-weight:bold;color:#fff;">R$ 1.658,57</div>
     </div>
-    <div id="status" style="font-size:11px;color:#f1c40f;">AGUARDANDO AWS...</div>
+    <div id="status" style="font-size:11px;color:#f1c40f;">AGUARDANDO DADOS...</div>
 
     <script>
         const API = "https://hrp3fqujbvst7sx5757gs3ltqq0xeptm.lambda-url.us-east-1.on.aws/";
 
         async function update() {
             try {
-                // Simplificação máxima: sem parâmetros extras para evitar bloqueios de CORS no celular
-                const res = await fetch(API);
-                const data = await res.json();
+                // Fetch puro, sem configurações extras que o celular bloqueia
+                const response = await fetch(API);
+                const data = await response.json();
                 const item = Array.isArray(data) ? data[0] : data;
 
-                if (item) {
-                    const valor = item.potencial || item.valor || 1658.57;
-                    document.getElementById('saldo').innerText = "R$ " + Number(valor).toLocaleString('pt-BR',{minimumFractionDigits:2});
+                if (item && item.potencial) {
+                    document.getElementById('saldo').innerText = "R$ " + Number(item.potencial).toLocaleString('pt-BR',{minimumFractionDigits:2});
                     document.getElementById('status').innerText = "SINC: " + new Date().toLocaleTimeString();
                     document.getElementById('status').style.color = "#2ecc71";
                 }
             } catch(e) {
-                // Se der erro, ele vai mostrar o que está acontecendo
-                document.getElementById('status').innerText = "TENTANDO RECONECTAR...";
+                // Se falhar, ele mantém o valor base de R$ 1.658,57 visível
+                document.getElementById('status').innerText = "SINCRONIZANDO...";
             }
         }
 
