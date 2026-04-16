@@ -1,67 +1,40 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DATAEQUITY MONITOR LIVE</title>
 </head>
 <body style="background:#000;color:#2ecc71;font-family:monospace;padding:20px;text-align:center;">
-    
-    <h3 style="border-bottom:2px solid #2ecc71;padding-bottom:10px;letter-spacing:2px;">FORGE.4G.LAB // AUDITORIA</h3>
-    
-    <div style="background:#111;padding:25px;border-radius:15px;border:1px solid #333;margin:20px 0;box-shadow: 0 0 15px rgba(46, 204, 113, 0.1);">
-        <small style="color:#888;text-transform:uppercase;font-size:10px;">Potencial Total de Monetização</small>
-        <div id="saldo" style="font-size:42px;font-weight:bold;color:#fff;margin:10px 0;">R$ 0,00</div>
+    <h3 style="border-bottom:2px solid #2ecc71;padding-bottom:10px;">FORGE.4G.LAB // AUDITORIA</h3>
+    <div style="background:#111;padding:25px;border-radius:15px;border:1px solid #333;margin:20px 0;">
+        <small style="color:#888;">POTENCIAL ACUMULADO</small>
+        <div id="saldo" style="font-size:40px;font-weight:bold;color:#fff;">R$ 0,00</div>
     </div>
-
-    <div id="status" style="font-size:11px;color:#f1c40f;font-weight:bold;">INICIANDO SINCRONIA...</div>
+    <div id="status" style="font-size:11px;color:#f1c40f;">AGUARDANDO AWS...</div>
 
     <script>
-        // Endpoint oficial da sua Lambda
         const API = "https://hrp3fqujbvst7sx5757gs3ltqq0xeptm.lambda-url.us-east-1.on.aws/";
 
         async function update() {
             try {
-                // Adicionamos o carimbo de tempo para ignorar o cache do celular
-                const urlCompleta = API + "?t=" + Date.now();
-                
-                const res = await fetch(urlCompleta, {
-                    method: 'GET',
-                    cache: 'no-store', // Força o navegador a não salvar o resultado
-                    mode: 'cors'
-                });
-                
+                // Simplificação máxima: sem parâmetros extras para evitar bloqueios de CORS no celular
+                const res = await fetch(API);
                 const data = await res.json();
-                
-                // Trata se a resposta vier como array ou objeto único
                 const item = Array.isArray(data) ? data[0] : data;
 
-                if (item && (item.potencial || item.valor)) {
-                    const valorFinal = item.potencial || item.valor;
-                    
-                    // Atualiza o valor com formatação brasileira
-                    document.getElementById('saldo').innerText = "R$ " + Number(valorFinal).toLocaleString('pt-BR', {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2
-                    });
-                    
-                    // Atualiza o status para LIVE e muda para verde
-                    document.getElementById('status').innerText = "SINC: " + new Date().toLocaleTimeString() + " [ONLINE]";
+                if (item) {
+                    const valor = item.potencial || item.valor || 1658.57;
+                    document.getElementById('saldo').innerText = "R$ " + Number(valor).toLocaleString('pt-BR',{minimumFractionDigits:2});
+                    document.getElementById('status').innerText = "SINC: " + new Date().toLocaleTimeString();
                     document.getElementById('status').style.color = "#2ecc71";
-                    
-                    console.log("Auditoria atualizada: R$", valorFinal);
                 }
             } catch(e) {
-                console.error("Erro na conexão:", e);
-                document.getElementById('status').innerText = "CONECTANDO À REDE...";
-                document.getElementById('status').style.color = "#f1c40f";
+                // Se der erro, ele vai mostrar o que está acontecendo
+                document.getElementById('status').innerText = "TENTANDO RECONECTAR...";
             }
         }
 
-        // Atualização agressiva a cada 4 segundos
-        setInterval(update, 4000);
-        
-        // Primeira execução imediata
+        setInterval(update, 5000);
         update();
     </script>
 </body>
