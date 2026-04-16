@@ -1,56 +1,36 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-</head>
-<body style="background:#000;color:#2ecc71;font-family:monospace;padding:20px;text-align:center;">
-    <h3 style="border-bottom:2px solid #2ecc71;padding-bottom:10px;">FORGE.4G.LAB // AUDITORIA</h3>
-    
-    <div style="background:#111;padding:25px;border-radius:15px;border:1px solid #333;margin:20px 0;">
-        <small style="color:#888;">POTENCIAL ACUMULADO</small>
-        <div id="saldo" style="font-size:38px;font-weight:bold;color:#fff;">R$ 1.658,57</div>
-    </div>
+<script>
+    const API = "https://hrp3fqujbvst7sx5757gs3ltqq0xeptm.lambda-url.us-east-1.on.aws/";
 
-    <div id="painel-invasor" style="background:#050505;border:1px dashed #2ecc71;padding:15px;border-radius:10px;margin-bottom:20px;">
-        <div style="font-size:10px;color:#888;">ÚLTIMA CAPTURA IDENTIFICADA:</div>
-        <div id="nome-invasor" style="font-size:18px;color:#e74c3c;font-weight:bold;margin:5px 0;">AGUARDANDO...</div>
-        <div id="ip-invasor" style="font-size:12px;color:#3498db;">IP: 0.0.0.0</div>
-    </div>
+    async function update() {
+        try {
+            // Chamada ultra-limpa para não assustar o navegador do celular
+            const response = await fetch(API);
+            const data = await response.json();
+            const item = Array.isArray(data) ? data[0] : data;
 
-    <div id="status" style="font-size:11px;color:#f1c40f;">SINCRONIZANDO...</div>
-
-    <script>
-        const API = "https://hrp3fqujbvst7sx5757gs3ltqq0xeptm.lambda-url.us-east-1.on.aws/";
-
-        async function update() {
-            try {
-                const response = await fetch(API + "?t=" + Date.now());
-                const data = await response.json();
-                const item = Array.isArray(data) ? data[0] : data;
-
-                if (item) {
-                    // 1. Atualiza o Saldo
-                    const valor = item.potencial || 1658.57;
-                    document.getElementById('saldo').innerText = "R$ " + Number(valor).toLocaleString('pt-BR',{minimumFractionDigits:2});
-                    
-                    // 2. Atualiza o Invasor (Alphabet, Meta, etc)
-                    if (item.nome_invasor) {
-                        document.getElementById('nome-invasor').innerText = item.nome_invasor.toUpperCase();
-                        document.getElementById('ip-invasor').innerText = "ORIGEM: " + (item.ip_invasor || "PROTEGIDO");
-                    }
-
-                    // 3. Atualiza o Status
-                    document.getElementById('status').innerText = "LIVE: " + new Date().toLocaleTimeString();
-                    document.getElementById('status').style.color = "#2ecc71";
+            if (item) {
+                // 1. Atualiza o Saldo (Potencial)
+                const valor = item.potencial || 1658.57;
+                document.getElementById('saldo').innerText = "R$ " + Number(valor).toLocaleString('pt-BR',{minimumFractionDigits:2});
+                
+                // 2. Atualiza o Invasor (Alphabet, Meta, etc)
+                if (item.nome_invasor && item.nome_invasor !== "Aguardando Captura...") {
+                    document.getElementById('nome-invasor').innerText = item.nome_invasor.toUpperCase();
+                    document.getElementById('ip-invasor').innerText = "ORIGEM: " + (item.ip_invasor || "IDENTIFICADO");
                 }
-            } catch(e) {
-                document.getElementById('status').innerText = "RECONECTANDO...";
-            }
-        }
 
-        setInterval(update, 5000);
-        update();
-    </script>
-</body>
-</html>
+                // 3. Atualiza o Status para VERDE
+                document.getElementById('status').innerText = "SINC: " + new Date().toLocaleTimeString() + " [LIVE]";
+                document.getElementById('status').style.color = "#2ecc71";
+            }
+        } catch(e) {
+            // Se der erro, ele avisa, mas tenta de novo em 5 segundos
+            document.getElementById('status').innerText = "SINCRONIZANDO...";
+            document.getElementById('status').style.color = "#f1c40f";
+        }
+    }
+
+    // Intervalo de 5 segundos para bater na AWS
+    setInterval(update, 5000);
+    update();
+</script>
