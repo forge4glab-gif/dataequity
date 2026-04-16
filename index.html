@@ -27,37 +27,48 @@
 
         async function update() {
             try {
-                // Chamada direta para evitar cache e bloqueios usando o carimbo de tempo
+                // Força atualização ignorando o cache do navegador
                 const res = await fetch(API + "?v=" + Date.now());
                 const data = await res.json();
-                const item = Array.isArray(data) ? data[0] : data;
+                
+                let final = data;
+                // Se a AWS retornar um array, pega o primeiro item
+                if (Array.isArray(data)) final = data[0];
+                
+                // Se o dado estiver "encapsulado" como string dentro do body (padrão Lambda URL)
+                if (final && typeof final.body === 'string') {
+                    try {
+                        const parsedBody = JSON.parse(final.body);
+                        final = Array.isArray(parsedBody) ? parsedBody[0] : parsedBody;
+                    } catch(e) { console.error("Erro ao processar body string"); }
+                }
 
-                if (item) {
-                    // 1. Atualiza o Saldo com o valor vindo da AWS ou o base
-                    const valorFinal = item.potencial || 1658.57;
-                    document.getElementById('saldo').innerText = "R$ " + Number(valorFinal).toLocaleString('pt-BR', {
+                if (final) {
+                    // 1. Atualiza o Saldo (Potencial)
+                    const valor = final.potencial || final.valor || 1658.57;
+                    document.getElementById('saldo').innerText = "R$ " + Number(valor).toLocaleString('pt-BR', {
                         minimumFractionDigits: 2,
                         maximumFractionDigits: 2
                     });
                     
-                    // 2. Atualiza os dados do invasor (Alphabet, TikTok, etc)
-                    if (item.nome_invasor) {
-                        document.getElementById('nome-invasor').innerText = item.nome_invasor.toUpperCase();
-                        document.getElementById('ip-invasor').innerText = "ORIGEM: " + (item.ip_invasor || "DETECTADO");
+                    // 2. Atualiza o Invasor (Alphabet, TikTok, etc)
+                    if (final.nome_invasor) {
+                        document.getElementById('nome-invasor').innerText = final.nome_invasor.toUpperCase();
+                        document.getElementById('ip-invasor').innerText = "ORIGEM: " + (final.ip_invasor || "IDENTIFICADO");
                     }
 
-                    // 3. Muda status para verde e mostra hora da última sincronia
+                    // 3. Status Verde de Sucesso
                     document.getElementById('status').innerText = "SINC: " + new Date().toLocaleTimeString() + " [LIVE]";
                     document.getElementById('status').style.color = "#2ecc71";
                 }
             } catch(e) {
                 // Em caso de erro, mantém o alerta amarelo
-                document.getElementById('status').innerText = "SINCRONIZANDO...";
+                document.getElementById('status').innerText = "CONECTANDO À NUVEM...";
                 document.getElementById('status').style.color = "#f1c40f";
             }
         }
 
-        // Atualização a cada 5 segundos
+        // Atualização agressiva a cada 5 segundos
         setInterval(update, 5000);
         update();
     </script>
