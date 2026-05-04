@@ -1,0 +1,92 @@
+# DATAEQUITY SYSTEM - GOVERNANÇA CORPORATIVA (v4.3.0)
+cd C:\dataequitysystem
+
+$FullLayout = @"
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DataEquity System - Governança</title>
+    <style>
+        body { background: #000; color: #00FF00; font-family: 'Courier New', monospace; margin: 0; overflow: hidden; }
+        .page { display: none; height: 90vh; padding: 20px; box-sizing: border-box; overflow-y: auto; }
+        .active { display: block; }
+        .nav-bar { position: fixed; bottom: 0; width: 100%; background: #111; display: flex; justify-content: space-around; padding: 10px 0; border-top: 1px solid #00FF00; overflow-x: auto; }
+        .nav-item { color: #00FF00; font-size: 0.5rem; cursor: pointer; padding: 8px; border: 1px solid #333; white-space: nowrap; font-weight: bold; }
+        .display-box { border: 1px solid #00FF00; padding: 15px; margin: 10px 0; background: #050505; }
+        h2 { color: #fff; font-size: 1.1rem; border-bottom: 1px solid #00FF00; padding-bottom: 5px; }
+        input, select { background: #000; border: 1px solid #00FF00; color: #00FF00; padding: 10px; width: 95%; margin-bottom: 10px; }
+        .btn { background: #00FF00; color: #000; padding: 12px; border: none; font-weight: bold; cursor: pointer; width: 100%; }
+        .bloco { border: 1px solid #fff; padding: 10px; margin-bottom: 15px; background: #111; }
+    </style>
+</head>
+<body>
+
+    <!-- ABAS 1 A 7 (HOME, CONTRATO, ID, GANHOS, FAQ, SAC, VPN) PERMANECEM -->
+    <div id="p1" class="page active"><h2>DASHBOARD</h2><div id="balance">R$ 0,00</div></div>
+    <div id="p2" class="page"><h2>CONTRATO FULL</h2><p>Rito de Salvamento: 1.Criação, 2.Indexação, 3.Maximização, 4.Transferência.</p></div>
+    <div id="p3" class="page"><h2>ID UNIVERSAL</h2><input type="text" placeholder="ID Blockchain"></div>
+    <div id="p4" class="page"><h2>GANHOS</h2><div class="display-box">30% POTENCIAL: <span id="projection">R$ 0,00</span></div></div>
+    <div id="p5" class="page"><h2>FAQ</h2><p>Blockchain Aliyun e Soberania Digital.</p></div>
+    <div id="p6" class="page"><h2>SAC</h2><p>contato@dataequity.gov</p></div>
+    <div id="p7" class="page"><h2>VPN ENGINE</h2><button class="btn">DOWNLOAD .OVPN</button></div>
+
+    <!-- 8. LOGIN E CADASTRAMENTO (ADMIN/LICENCIADOS) -->
+    <div id="p8" class="page">
+        <h2>8. ACESSO RESTRITO - LICENCIADOS</h2>
+        <div class="display-box">
+            <p>CADASTRAMENTO DE ENTIDADE:</p>
+            <input type="text" placeholder="Razão Social / CNPJ">
+            <input type="text" placeholder="Registro Profissional (Responsável Jurídico)">
+            <p style="font-size:0.6rem;">*Necessário para notificações extrajudiciais e ações judiciais.</p>
+            <button class="btn" onclick="alert('Dados Enviados para Auditoria')">SOLICITAR ACESSO</button>
+        </div>
+    </div>
+
+    <!-- 9. BLOCOS DE DADOS POR IP -->
+    <div id="p9" class="page">
+        <h2>9. TERMINAL DE LIQUIDAÇÃO DE BLOCOS</h2>
+        
+        <!-- BLOCO EXEMPLO -->
+        <div class="bloco">
+            <p><b>ID BLOCO:</b> ALPHA-001 | <b>IP COLETADOR:</b> 192.168.0.8</p>
+            <p>VALOR ACUMULADO: R$ 188.557,34</p>
+            <p>EXPECTATIVA SISTEMA (40%): R$ 75.422,93</p>
+            <p style="color:#00FF00;"><b>TAXA DE RESERVA (4%): R$ 3.016,91</b></p>
+            <button class="btn" style="background:#fff;" onclick="alert('Aguardando Confirmação de Pagamento para liberação de Provas Auditáveis')">RESERVAR BLOCO</button>
+        </div>
+    </div>
+
+    <nav class="nav-bar">
+        <div class="nav-item" onclick="showPage('p1')">HOME</div>
+        <div class="nav-item" onclick="showPage('p4')">GANHOS</div>
+        <div class="nav-item" onclick="showPage('p7')">VPN</div>
+        <div class="nav-item" onclick="showPage('p8')">LOGIN</div>
+        <div class="nav-item" onclick="showPage('p9')">BLOCOS</div>
+    </nav>
+
+    <script>
+        async function update() {
+            try {
+                const res = await fetch('data.json?n=' + Date.now());
+                const d = await res.json();
+                const f = new Intl.NumberFormat('pt-BR',{style:'currency',currency:'BRL'}).format(d.balance);
+                document.getElementById('balance').innerText = f;
+                document.getElementById('projection').innerText = new Intl.NumberFormat('pt-BR',{style:'currency',currency:'BRL'}).format(d.balance * 0.3);
+            } catch(e) {}
+        }
+        function showPage(id) {
+            document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+        }
+        setInterval(update, 1000); update();
+    </script>
+</body>
+</html>
+"@
+
+$FullLayout | Out-File -FilePath "index.html" -Encoding utf8 -Force
+Stop-Process -Name "python" -Force -ErrorAction SilentlyContinue
+Write-Host "Interface de Governança Injetada com Sucesso." -ForegroundColor Green
+python -m http.server 8080 --bind 0.0.0.0

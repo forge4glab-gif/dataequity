@@ -1,0 +1,161 @@
+# DATAEQUITY SYSTEM - EXPANSÃO CORPORATIVA E GOVERNANÇA (v4.5.0)
+cd C:\dataequitysystem
+
+$FullLayout = @"
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DataEquity System - Governança Oficial</title>
+    <style>
+        body { background: #000; color: #00FF00; font-family: 'Courier New', monospace; margin: 0; overflow: hidden; }
+        .page { display: none; height: 90vh; padding: 20px; box-sizing: border-box; overflow-y: auto; text-align: left; }
+        .active { display: block; }
+        .nav-bar { position: fixed; bottom: 0; width: 100%; background: #111; display: flex; justify-content: space-around; padding: 10px 0; border-top: 1px solid #00FF00; overflow-x: auto; }
+        .nav-item { color: #00FF00; font-size: 0.5rem; cursor: pointer; padding: 5px; white-space: nowrap; border: 1px solid #333; margin: 0 2px; }
+        .display-box { border: 1px solid #00FF00; padding: 15px; margin: 10px 0; background: #050505; }
+        .admin-box { border: 1px solid #fff; padding: 15px; margin: 10px 0; background: #111; color: #fff; }
+        h2 { color: #fff; font-size: 1.1rem; border-bottom: 1px solid #00FF00; }
+        input, select { background: #000; border: 1px solid #00FF00; color: #00FF00; padding: 8px; width: 90%; margin-bottom: 10px; }
+        .btn { background: #00FF00; color: #000; padding: 10px; border: none; font-weight: bold; cursor: pointer; margin-top: 10px; width: 100%; }
+        .btn-reserve { background: #fff; color: #000; font-size: 0.8rem; }
+        .restricted { color: #ff0000; font-weight: bold; text-align: center; margin-top: 50px; }
+    </style>
+</head>
+<body>
+
+    <!-- 1-7: PÁGINAS PÚBLICAS/USUÁRIO -->
+    <div id="p1" class="page active">
+        <h2>1. DATAEQUITY SYSTEM</h2>
+        <p>Monitoramento e monetização via blockchain e recursos públicos.</p>
+    </div>
+
+    <div id="p2" class="page">
+        <h2>2. CONTRATO DO USUÁRIO</h2>
+        <p style="font-size: 0.7rem;">Soberania de dados e rito de salvamento maximizado.</p>
+    </div>
+
+    <div id="p3" class="page">
+        <h2>3. ID UNIVERSAL</h2>
+        <input type="text" placeholder="Nome de Usuário"><br>
+        <input type="email" placeholder="E-mail Principal">
+        <button class="btn">INJETAR IDENTIDADE</button>
+    </div>
+
+    <div id="p4" class="page">
+        <h2>4. PAINEL DE MONETIZAÇÃO</h2>
+        <div class="display-box">SALDO REAL: <span id="balance">R$ 0,00</span></div>
+        <div class="display-box">PROJEÇÃO (30%): <span id="projection">R$ 0,00</span></div>
+    </div>
+
+    <div id="p5" class="page"><h2>5. FAQ</h2><p>Dúvidas sobre o nexo e blockchain.</p></div>
+    <div id="p6" class="page"><h2>6. SAC</h2><p>contato@dataequity.gov</p></div>
+    <div id="p7" class="page"><h2>7. VPN</h2><button class="btn">DOWNLOAD .OVPN / .EXE</button></div>
+
+    <!-- 8. LOGIN E CADASTRAMENTO (PORTAL DO LICENCIADO) -->
+    <div id="p8" class="page">
+        <h2>8. ACESSO RESTRITO - LOGIN ADMINISTRATIVO</h2>
+        <div class="admin-box">
+            <p style="color: #00FF00;">CADASTRO DE LICENCIADO / ADM</p>
+            <input type="text" id="compName" placeholder="Razão Social / Dados da Empresa"><br>
+            <input type="text" id="regProf" placeholder="Registro Profissional (Ente Responsável)"><br>
+            <p style="font-size: 0.6rem;">*O ente será responsável por notificações extrajudiciais e ações judiciais.</p>
+            <button class="btn" onclick="validateAdmin()">AUTENTICAR E LIBERAR ACESSO</button>
+        </div>
+    </div>
+
+    <!-- 9. DISPLAYS DE BLOCOS DE DADOS (PAGINA RESTRITA) -->
+    <div id="p9" class="page">
+        <div id="restricted-msg" class="restricted">ACESSO NEGADO: CADASTRO PENDENTE</div>
+        <div id="admin-content" style="display:none;">
+            <h2>9. TERMINAL DE LIQUIDAÇÃO DE BLOCOS</h2>
+            <p style="font-size:0.7rem;">Aglutinação de dados por IP Coletador</p>
+            
+            <div class="admin-box" style="border-color: #00FF00;">
+                <p><b>BLOCO ID:</b> <span id="block-id">B-192168008</span></p>
+                <p><b>IP COLETADOR:</b> 192.168.0.8</p>
+                <p><b>VALOR ACUMULADO:</b> <span id="block-val">R$ 0,00</span></p>
+                <hr style="border: 0.5px solid #333;">
+                <p style="font-size: 0.75rem;">EXPECTATIVA SISTEMA (40%): <span id="sys-expect">R$ 0,00</span></p>
+                <p style="color:#fff;"><b>TAXA DE RESERVA (4%): <span id="reserve-fee">R$ 0,00</span></b></p>
+                <button class="btn btn-reserve" onclick="reserveBlock()">RESERVAR BLOCO E GERAR BOLETO DE TAXA</button>
+            </div>
+            <p style="font-size: 0.6rem; color: #888; margin-top: 15px;">*A liberação de certificados individuais e provas auditáveis ocorre após confirmação do pagamento.</p>
+        </div>
+    </div>
+
+    <nav class="nav-bar">
+        <div class="nav-item" onclick="showPage('p1')">HOME</div>
+        <div class="nav-item" onclick="showPage('p4')">GANHOS</div>
+        <div class="nav-item" onclick="showPage('p7')">VPN</div>
+        <div class="nav-item" onclick="showPage('p8')">ADMIN/LOGIN</div>
+        <div class="nav-item" onclick="showPage('p9')">BLOCOS</div>
+    </nav>
+
+    <script>
+        let isAdmin = false;
+
+        async function updateData() {
+            try {
+                const res = await fetch('data.json?nocache=' + Date.now());
+                const data = await res.json();
+                const fmt = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' });
+                
+                const valorTotal = data.balance;
+                const expectSist = valorTotal * 0.40;
+                const taxaReserva = expectSist * 0.04;
+
+                document.getElementById('balance').innerText = fmt.format(valorTotal);
+                document.getElementById('projection').innerText = fmt.format(valorTotal * 0.30);
+                
+                // Dados Administrativos (Página 9)
+                document.getElementById('block-val').innerText = fmt.format(valorTotal);
+                document.getElementById('sys-expect').innerText = fmt.format(expectSist);
+                document.getElementById('reserve-fee').innerText = fmt.format(taxaReserva);
+
+            } catch (err) { console.error("Erro de sincronização: ", err); }
+        }
+
+        function validateAdmin() {
+            const name = document.getElementById('compName').value;
+            const reg = document.getElementById('regProf').value;
+            if(name && reg) {
+                isAdmin = true;
+                alert("Licenciado Autenticado. Acesso aos Blocos liberado.");
+                showPage('p9');
+            } else {
+                alert("Erro: Preencha todos os dados de comprovação e registro profissional.");
+            }
+        }
+
+        function showPage(id) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            
+            if(id === 'p9') {
+                if(isAdmin) {
+                    document.getElementById('restricted-msg').style.display = 'none';
+                    document.getElementById('admin-content').style.display = 'block';
+                } else {
+                    document.getElementById('restricted-msg').style.display = 'block';
+                    document.getElementById('admin-content').style.display = 'none';
+                }
+            }
+        }
+
+        function reserveBlock() {
+            alert("Reserva registrada. Gerando nexo de pagamento da Taxa de 4%. As provas auditáveis serão transferidas após a compensação.");
+        }
+
+        setInterval(updateData, 1000);
+        updateData();
+    </script>
+</body>
+</html>
+"@
+
+$FullLayout | Out-File -FilePath "index.html" -Encoding utf8 -Force
+Stop-Process -Name "python" -Force -ErrorAction SilentlyContinue
+Write-Host "Governança Corporativa v4.5.0 Integrada." -ForegroundColor Green
+python -m http.server 8080 --bind 0.0.0.0

@@ -1,0 +1,9 @@
+﻿{
+  "name": "DataEquity System",
+  "short_name": "DEQS_v510",
+  "start_url": "index.html",
+  "display": "standalone",
+  "background_color": "#000",
+  "theme_color": "#00FF00",
+  "icons": [{ "src": "favicon.ico", "sizes": "192x192", "type": "image/png" }]
+}

@@ -1,0 +1,12 @@
+﻿{
+  "name": "DataEquity System",
+  "short_name": "DEQS",
+  "description": "Observador Autônomo de Dados",
+  "start_url": "index.html",
+  "display": "standalone",
+  "background_color": "#000000",
+  "theme_color": "#00FF00",
+  "icons": [
+    { "src": "favicon.ico", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" }
+  ]
+}

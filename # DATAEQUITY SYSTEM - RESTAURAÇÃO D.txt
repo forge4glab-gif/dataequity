@@ -1,0 +1,125 @@
+# DATAEQUITY SYSTEM - RESTAURAÇÃO DE LAYOUT INTEGRAL (v4.2.0)
+cd C:\dataequitysystem
+
+$FullLayout = @"
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DataEquity System - Oficial</title>
+    <style>
+        body { background: #000; color: #00FF00; font-family: 'Courier New', monospace; margin: 0; overflow: hidden; }
+        .page { display: none; height: 90vh; padding: 20px; box-sizing: border-box; overflow-y: auto; text-align: left; }
+        .active { display: block; }
+        .nav-bar { position: fixed; bottom: 0; width: 100%; background: #111; display: flex; justify-content: space-around; padding: 10px 0; border-top: 1px solid #00FF00; overflow-x: auto; }
+        .nav-item { color: #00FF00; font-size: 0.55rem; cursor: pointer; padding: 5px; white-space: nowrap; border: 1px solid #333; margin: 0 2px; }
+        .display-box { border: 1px solid #00FF00; padding: 15px; margin: 10px 0; background: #050505; }
+        h2 { color: #fff; font-size: 1.2rem; border-bottom: 1px solid #00FF00; }
+        input { background: #000; border: 1px solid #00FF00; color: #00FF00; padding: 8px; width: 90%; }
+        .btn { background: #00FF00; color: #000; padding: 10px; border: none; font-weight: bold; cursor: pointer; margin-top: 10px; }
+    </style>
+</head>
+<body>
+
+    <!-- 1. ABERTURA: OBJETIVOS -->
+    <div id="p1" class="page active">
+        <h2>1. DATAEQUITY SYSTEM</h2>
+        <p>Objetivo: Monitorar o uso de dados coletados por cookies, identificar via blockchain, rastrear o uso e monetizar através de recursos públicos.</p>
+        <p>Soberania de dados e transparência total no fluxo de informações.</p>
+    </div>
+
+    <!-- 2. CONTRATO FULL -->
+    <div id="p2" class="page">
+        <h2>2. CONTRATO DO USUÁRIO</h2>
+        <div style="font-size: 0.8rem; height: 300px; overflow-y: scroll; border: 1px solid #333; padding: 10px;">
+            Este contrato estabelece que o pagamento pela imagem gravada ocorre quando solicitada por agências de segurança ou entes legais. O usuário retém a soberania sobre a indexação e transferência.
+        </div>
+    </div>
+
+    <!-- 3. ID UNIVERSAL -->
+    <div id="p3" class="page">
+        <h2>3. ID UNIVERSAL</h2>
+        <input type="text" placeholder="Nome de Usuário" id="userName"><br><br>
+        <input type="email" placeholder="E-mail Principal" id="userEmail"><br>
+        <button class="btn">INJETAR IDENTIDADE</button>
+    </div>
+
+    <!-- 4. DISPLAYS DE GANHOS -->
+    <div id="p4" class="page">
+        <h2>4. PAINEL DE MONETIZAÇÃO</h2>
+        <div class="display-box">
+            SALDO EM TEMPO REAL:<br>
+            <span id="balance" style="font-size: 1.8rem;">R$ 0,00</span>
+        </div>
+        <div class="display-box">
+            PROJEÇÃO DE GANHO POTENCIAL (30%):<br>
+            <span id="projection" style="color: #fff;">R$ 0,00</span>
+        </div>
+        <div class="display-box">
+            VALOR PROVENIENTE DA VPN:<br>
+            <span id="vpn-value">R$ 0,00</span>
+        </div>
+    </div>
+
+    <!-- 5. FAQ FULL -->
+    <div id="p5" class="page">
+        <h2>5. FAQ</h2>
+        <p><b>Como funciona a blockchain?</b> Identifica e rastreia o uso dos dados.</p>
+        <p><b>Onde os dados são salvos?</b> Local determinado pelo usuário, maximizado para menor espaço.</p>
+    </div>
+
+    <!-- 6. SAC -->
+    <div id="p6" class="page">
+        <h2>6. SAC & ASSISTÊNCIA</h2>
+        <p>Suporte Técnico: Maria Paula Soares</p>
+        <p>Registro INPI: 512026001509-0</p>
+    </div>
+
+    <!-- 7. DOWNLOAD VPN -->
+    <div id="p7" class="page">
+        <h2>7. DOWNLOAD EXECUTÁVEL</h2>
+        <p>Baixe a VPN para iniciar a captação de dados no seu dispositivo.</p>
+        <button class="btn">DOWNLOAD .OVPN / .EXE</button>
+    </div>
+
+    <nav class="nav-bar">
+        <div class="nav-item" onclick="showPage('p1')">OBJETIVO</div>
+        <div class="nav-item" onclick="showPage('p2')">CONTRATO</div>
+        <div class="nav-item" onclick="showPage('p3')">ID</div>
+        <div class="nav-item" onclick="showPage('p4')">GANHOS</div>
+        <div class="nav-item" onclick="showPage('p5')">FAQ</div>
+        <div class="nav-item" onclick="showPage('p6')">SAC</div>
+        <div class="nav-item" onclick="showPage('p7')">VPN</div>
+    </nav>
+
+    <script>
+        async function updateData() {
+            try {
+                const res = await fetch('data.json?nocache=' + Date.now());
+                const data = await res.json();
+                const fmt = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' });
+                
+                const valorReal = data.balance;
+                document.getElementById('balance').innerText = fmt.format(valorReal);
+                document.getElementById('projection').innerText = fmt.format(valorReal * 0.30);
+                document.getElementById('vpn-value').innerText = fmt.format(valorReal * 0.70);
+            } catch (err) { console.error("Erro no Nexo: ", err); }
+        }
+
+        function showPage(id) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+        }
+
+        setInterval(updateData, 1000);
+        updateData();
+    </script>
+</body>
+</html>
+"@
+
+$FullLayout | Out-File -FilePath "index.html" -Encoding utf8 -Force
+Stop-Process -Name "python" -Force -ErrorAction SilentlyContinue
+Write-Host "Layout de 7 Páginas Restaurado e Sincronizado." -ForegroundColor Green
+python -m http.server 8080 --bind 0.0.0.0

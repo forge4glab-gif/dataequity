@@ -1,0 +1,80 @@
+# DATAEQUITY SYSTEM - REGENERAÇÃO DA INTERFACE MULTIPÁGINAS (v4.0.8)
+cd C:\dataequitysystem
+
+$FullHtml = @"
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="manifest" href="manifest.json">
+    <title>DataEquity System - Soberania Digital</title>
+    <style>
+        body { background: #000; color: #00FF00; font-family: 'Courier New', monospace; margin: 0; overflow: hidden; }
+        .page { display: none; height: 100vh; padding: 20px; box-sizing: border-box; }
+        .active { display: flex; flex-direction: column; justify-content: center; align-items: center; }
+        .nav-bar { position: fixed; bottom: 0; width: 100%; background: #111; display: flex; justify-content: space-around; padding: 15px 0; border-top: 1px solid #00FF00; }
+        .nav-item { color: #00FF00; text-decoration: none; font-size: 0.8rem; cursor: pointer; }
+        #balance { font-size: 2.5rem; font-weight: bold; text-shadow: 0 0 15px #00FF00; margin: 20px 0; }
+        .status-box { font-size: 0.7rem; border: 1px solid #00FF00; padding: 10px; width: 80%; max-width: 400px; }
+    </style>
+</head>
+<body>
+
+    <!-- PÁGINA 1: VISÃO DE SOBERANIA (HOME) -->
+    <div id="home" class="page active">
+        <div>SISTEMA DE SOBERANIA DATAEQUITY</div>
+        <div id="balance">R$ 0,00</div>
+        <div class="status-box">
+            STATUS: <span id="status-text">SINCRONIZANDO...</span><br>
+            IP: 192.168.0.8 | BLOCKCHAIN: ALIYUN VALIDATED<br>
+            ITEMS EM /STORAGE: 121
+        </div>
+    </div>
+
+    <!-- PÁGINA 2: CARTEIRA E MONETIZAÇÃO -->
+    <div id="wallet" class="page">
+        <div>CARTEIRA DE RECURSOS PÚBLICOS</div>
+        <p>Saldo Processado via AWS Lambda</p>
+        <div id="wallet-balance" style="font-size: 1.5rem;">R$ 0,00</div>
+    </div>
+
+    <!-- NAVEGAÇÃO -->
+    <nav class="nav-bar">
+        <div class="nav-item" onclick="showPage('home')">HOME</div>
+        <div class="nav-item" onclick="showPage('wallet')">CARTEIRA</div>
+    </nav>
+
+    <script>
+        // MOTOR DE ATUALIZAÇÃO GRÁFICA (INJETADO)
+        async function updateData() {
+            try {
+                const response = await fetch('data.json?nocache=' + new Date().getTime());
+                const data = await response.json();
+                
+                const fmt = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' });
+                const valorFormatado = fmt.format(data.balance);
+
+                document.getElementById('balance').innerText = valorFormatado;
+                document.getElementById('wallet-balance').innerText = valorFormatado;
+                document.getElementById('status-text').innerText = data.status.toUpperCase();
+                
+                console.log("Nexo Gráfico em Pulso: " + data.balance);
+            } catch (err) { console.error("Erro de Visão: ", err); }
+        }
+
+        function showPage(id) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+        }
+
+        setInterval(updateData, 1000);
+        updateData();
+    </script>
+</body>
+</html>
+"@
+
+$FullHtml | Out-File -FilePath "index.html" -Encoding utf8 -Force
+Write-Host "Interface Multiapp Regenerada com Motor Gráfico." -ForegroundColor Green
+"@
